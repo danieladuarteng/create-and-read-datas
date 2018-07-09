@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR" ng-app="myApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Catálogo</title>
+    <link rel="stylesheet" href="static/mdl/material.min.css">
+    <script src="static/mdl/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <script src="static/js/angular.js"></script>
+    <script>
+        angular.module('myApp', [])
+
+            .controller('HomeCtrl', function($scope, $http) {
+            
+                $scope.info = {};
+
+                $scope.get_records = function(){
+                    $http({
+                        method: 'POST',
+                        url: '/get_records'
+
+                    }).then(function(response) {
+                        $scope.contatos = response.data;//pega valores flask
+                        console.log('mm',$scope.contatos);//retorna no console
+                    });
+                }
+            
+                $scope.insert_records = function(){
+                    
+                    $http({
+                        method: 'POST',
+                        url: '/insert_records',
+                        data: {info:$scope.info}
+                    }).then(function(response) {
+                        $scope.get_records();
+                        $scope.info = {}
+                    });
+                }
+                
+                $scope.get_records();
+            })
+    </script>
+
+</head>
+
+<body ng-controller="HomeCtrl">
+    <!-- Always shows a header, even in smaller screens. -->
+    <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header">
+    <header class="mdl-layout__header">
+        <div class="mdl-layout__header-row">
+        <!-- Title -->
+        <span class="mdl-layout-title">Catálogo</span>
+        <!-- Add spacer, to align navigation to the right -->
+        <div class="mdl-layout-spacer"></div>
+    </header>
+
+    <main class="mdl-layout__content">
+        <div class="page-content">
+            
+            <div style="padding: 80px;">
+                <!-- Textfield with Floating Label -->
+                <div style="display: block;" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="text" ng-model="info.nome" id="nome">
+                    <label style="color:#000;" class="mdl-textfield__label" for="nome">Nome:</label>
+                </div>
+
+                <div style="display: block;;" class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="text" ng-model="info.email" id="email">
+                    <label style="color:#000;" class="mdl-textfield__label" for="email">E-mail:</label>
+                </div>
+
+                <div style="display: block; " class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <input class="mdl-textfield__input" type="text" ng-model="info.telefone" id="telefone">
+                    <label  style="color:#000;"class="mdl-textfield__label" for="telefone">Telefone:</label>
+                </div>
+
+                <!-- Accent-colored raised button with ripple -->
+                <button ng-click="insert_records()" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent">
+                  Enviar
+                </button>
+
+                <div style="padding-top: 50px;"> </div>
+
+                <table style="padding: 80px;" class="mdl-data-table mdl-js-data-table">
+                    <thead style="padding: 50px;">
+                        <tr>
+                            <th class="mdl-data-table__cell--non-numeric">Nome</th>
+                            <th class="mdl-data-table__cell--non-numeric">E-mail</th>
+                            <th class="mdl-data-table__cell--non-numeric">Telefone</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for busca in contatos %}
+                        <tr>
+                            <td class="mdl-data-table__cell--non-numeric">{{busca.nome}}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{busca.email}}</td>
+                            <td class="mdl-data-table__cell--non-numeric">{{busca.telefone}}</td>
+                        </tr>
+                        {% endfor%}       
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+    
+    <script src="static/js/jquery.min.js"></script>
+
+</body>
+</html>
